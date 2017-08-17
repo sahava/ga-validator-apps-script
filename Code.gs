@@ -155,8 +155,8 @@ function getGaHits() {
   }
   selectedCell = sheet.getActiveCell();
   selectedColumn = selectedCell.getColumn();
-  if (!/^UA-/.test(selectedCell.getValue())) {
-    throw new Error('You must select a cell with a GA property ID');
+  if (selectedColumn === 1 || !/^UA-/.test(sheet.getRange(3, selectedColumn, 1, 1).getValue())) {
+    throw new Error('You must select one of the populated data columns!');
   }
   // Allow the user to select any one of the four UA-12345-1 items in the GA Dimensions list
   switch (sheet.getRange(6, selectedColumn).getValue()) {
