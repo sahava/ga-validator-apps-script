@@ -6,7 +6,14 @@ function getAccountSummary() {
 }
 
 function getSheet(name) {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name) || SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  var ui = SpreadsheetApp.getUi();
+  var response;
+  if (sheet) {
+    response = ui.alert('Sheet named ' + name + ' already exists! Click OK to overwrite, CANCEL to abort.', ui.ButtonSet.OK_CANCEL);
+    return response === ui.Button.OK ? sheet : false;
+  }
+  return SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
 }
 
 function writeGaHierarchy() {
@@ -15,6 +22,12 @@ function writeGaHierarchy() {
       items = getAccountSummary().getItems(),
       final = [];
   var i, j, k;
+  
+  // Abort if sheet existed and user pressed CANCEL
+  if (sheet === false) {
+    return;
+  }
+  
   // Clear the GA Hierarchy sheet
   sheet.clear();
   // Build hierarchy of accounts, properties, and views
@@ -114,6 +127,12 @@ function buildGaSheet(sheet) {
       gaSheet = getSheet('GA Dimensions'),
       firstCol = [['Account name'], ['Property name'], ['Property ID'], ['View name'], ['View ID'], ['Dimension']];
   var i, columnData;
+  
+  // Abort if sheet existed and user clicked CANCEL
+  if (gaSheet === false) {
+    return;
+  }
+  
   if (sourceData.length === 0) {
     throw new Error('No rows selected for analysis.');
   }
